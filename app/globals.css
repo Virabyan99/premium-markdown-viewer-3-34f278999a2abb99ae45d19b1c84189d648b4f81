@@ -126,4 +126,12 @@
   code {
     @apply font-mono text-sm;
   }
+
+  .prose {
+    @apply leading-relaxed antialiased;
+  }
+
+  .font-kr, .font-jp, .font-sc {
+    @apply leading-[1.75]; /* Consistent line height for CJK */
+  }
 }

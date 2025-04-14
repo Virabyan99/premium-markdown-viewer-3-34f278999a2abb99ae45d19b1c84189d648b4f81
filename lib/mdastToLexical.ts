@@ -1,5 +1,6 @@
 import { Root, RootContent } from 'mdast';
 import { highlightCode } from './highlightCode';
+import { detectLang } from './detectLang';
 
 export async function mdastToLexicalJson(mdast: Root): Promise<string> {
   const root = {
@@ -69,12 +70,15 @@ export async function mdastToLexicalJson(mdast: Root): Promise<string> {
         };
         item.children.forEach((child: any) => {
           if (child.type === 'paragraph') {
+            const paragraphText = child.children.map((c: any) => c.value || '').join('');
+            const lang = detectLang(paragraphText);
             const paragraph = {
               type: 'paragraph',
               format: '',
               indent: indentLevel,
               version: 1,
               direction: 'ltr',
+              lang, // Store language info
               children: processInline(child.children),
             };
             listItem.children.push(paragraph);
@@ -91,17 +95,22 @@ export async function mdastToLexicalJson(mdast: Root): Promise<string> {
   for (const node of mdast.children) {
     switch (node.type) {
       case 'paragraph':
+        const paragraphText = node.children.map((child: any) => child.value || '').join('');
+        const paragraphLang = detectLang(paragraphText);
         const paragraph = {
           type: 'paragraph',
           format: '',
           indent: 0,
           version: 1,
           direction: 'ltr',
+          lang: paragraphLang, // Store language info
           children: processInline(node.children),
         };
         root.children.push(paragraph);
         break;
       case 'heading':
+        const headingText = node.children.map((child: any) => child.value || '').join('');
+        const headingLang = detectLang(headingText);
         const heading = {
           type: 'heading',
           tag: `h${node.depth}`,
@@ -109,6 +118,7 @@ export async function mdastToLexicalJson(mdast: Root): Promise<string> {
           indent: 0,
           version: 1,
           direction: 'ltr',
+          lang: headingLang, // Store language info
           children: processInline(node.children),
         };
         root.children.push(heading);
