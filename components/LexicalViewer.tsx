@@ -143,11 +143,11 @@ export default function LexicalViewer({ json }: { json: string }) {
   }, [pageCount, visiblePages]);
 
   return (
-    <Card>
+    <Card className='max-w-4xl mx-auto'>
       <CardContent>
         <div
           ref={containerRef}
-          className="max-h-[86vh] overflow-y-auto space-y-4"
+          className="max-h-[86vh] overflow-y-auto  space-y-4"
         >
           {visiblePages.map((idx) => {
             const start = idx * nodesPerPage;
