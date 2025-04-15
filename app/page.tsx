@@ -124,8 +124,8 @@ export default function HomePage() {
       >
         {!activeFileId && <FileDrop onFileRead={handleFileRead} />}
         {loading && (
-          <Card>
-            <CardContent className="pt-6 max-w-4xl text-gray-500">Loading...</CardContent>
+          <Card className='max-w-4xl mx-auto h-full'>
+            <CardContent className="pt-6  text-gray-500">Loading...</CardContent>
           </Card>
         )}
         {error && (
