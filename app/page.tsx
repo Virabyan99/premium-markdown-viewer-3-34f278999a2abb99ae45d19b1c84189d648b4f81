@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import FileDrop from '@/components/FileDrop';
 import LexicalViewer from '@/components/LexicalViewer';
 import { parseMarkdownToAst } from '@/lib/parseMarkdownAst';
@@ -10,23 +10,23 @@ import { FileSidebar } from '@/components/FileSidebar';
 import { useFileStore } from '@/lib/fileStore';
 
 export default function HomePage() {
-  // State for Lexical JSON, loading, and error handling
   const [lexicalJson, setLexicalJson] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
 
-  // Access Zustand store for file management
   const files = useFileStore((s) => s.files);
   const activeFileId = useFileStore((s) => s.activeFileId);
   const loadFiles = useFileStore((s) => s.loadFiles);
   const addFile = useFileStore((s) => s.addFile);
 
-  // Load persisted files from IndexedDB on component mount
+  const mainRef = useRef<HTMLDivElement>(null);
+  const dragCounterRef = useRef(0);
+
   useEffect(() => {
     loadFiles();
   }, [loadFiles]);
 
-  // Process the active file's Markdown to Lexical JSON when activeFileId or files change
   useEffect(() => {
     if (!activeFileId) {
       setLexicalJson(null);
@@ -52,38 +52,87 @@ export default function HomePage() {
     })();
   }, [activeFileId, files]);
 
-  // Handle file upload by creating a new MarkdownFile and adding it to the store
   const handleFileRead = async (content: string, fileName: string) => {
     const newFile = {
-      id: crypto.randomUUID(), // Generate a unique ID
+      id: crypto.randomUUID(),
       name: fileName,
       content,
       createdAt: Date.now(),
     };
-    await addFile(newFile); // Add to store, which persists it and sets it as active
+    await addFile(newFile);
   };
 
+  useEffect(() => {
+    const mainElement = mainRef.current;
+    if (!mainElement) return;
+
+    const handleDragEnter = (e: DragEvent) => {
+      e.preventDefault();
+      dragCounterRef.current++;
+      if (dragCounterRef.current === 1) {
+        setIsDraggingOver(true);
+      }
+    };
+
+    const handleDragLeave = (e: DragEvent) => {
+      e.preventDefault();
+      dragCounterRef.current--;
+      if (dragCounterRef.current === 0) {
+        setIsDraggingOver(false);
+      }
+    };
+
+    const handleDragOver = (e: DragEvent) => {
+      e.preventDefault();
+    };
+
+    const handleDrop = (e: DragEvent) => {
+      e.preventDefault();
+      setIsDraggingOver(false);
+      dragCounterRef.current = 0;
+      const file = e.dataTransfer.files[0];
+      if (file && file.name.endsWith('.md')) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          handleFileRead(reader.result as string, file.name);
+        };
+        reader.readAsText(file);
+      } else {
+        alert('Please drop a .md file only.');
+      }
+    };
+
+    mainElement.addEventListener('dragenter', handleDragEnter);
+    mainElement.addEventListener('dragleave', handleDragLeave);
+    mainElement.addEventListener('dragover', handleDragOver);
+    mainElement.addEventListener('drop', handleDrop);
+
+    return () => {
+      mainElement.removeEventListener('dragenter', handleDragEnter);
+      mainElement.removeEventListener('dragleave', handleDragLeave);
+      mainElement.removeEventListener('dragover', handleDragOver);
+      mainElement.removeEventListener('drop', handleDrop);
+    };
+  }, [handleFileRead]);
+
   return (
-    <div className="flex justify-center  h-screen">
-      {/* Sidebar for file navigation */}
+    <div className="flex h-screen">
       <FileSidebar />
-      {/* Main content area */}
-      <main className="p-4 overflow-y-auto w-full max-w-4xl rounded-lg">
-        {/* Show FileDrop when no file is selected */}
+      <main
+        ref={mainRef}
+        className={`flex-1 p-4 overflow-y-auto ${isDraggingOver ? 'bg-gray-100' : ''}`}
+      >
         {!activeFileId && <FileDrop onFileRead={handleFileRead} />}
-        {/* Loading state */}
         {loading && (
           <Card>
             <CardContent className="pt-6 text-gray-500">Loading...</CardContent>
           </Card>
         )}
-        {/* Error state */}
         {error && (
           <Card className="border-red-300">
             <CardContent className="pt-6 text-red-500">{error}</CardContent>
           </Card>
         )}
-        {/* Display LexicalViewer when content is ready */}
         {lexicalJson && !loading && !error && <LexicalViewer json={lexicalJson} />}
       </main>
     </div>

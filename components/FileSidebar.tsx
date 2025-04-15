@@ -3,7 +3,7 @@
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ChevronRight, X } from 'lucide-react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { useFileStore } from '@/lib/fileStore';
 import { useEffect } from 'react';
 
@@ -33,7 +33,7 @@ export function FileSidebar() {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-64 p-0">
-        <SheetTitle className="m-2">Uploaded Files</SheetTitle>
+        <SheetTitle className="m-2">Recent Files</SheetTitle>
         <ScrollArea className="h-[calc(100%-2rem)]">
           {files.length === 0 ? (
             <p className="text-gray-500 p-2">No files uploaded yet.</p>
@@ -53,7 +53,7 @@ export function FileSidebar() {
                     size="icon"
                     onClick={() => deleteFile(file.id)}
                   >
-                    <X className="h-4 w-4" />
+                    <ChevronLeft className="h-4 w-4" />
                   </Button>
                 </div>
               ))}
