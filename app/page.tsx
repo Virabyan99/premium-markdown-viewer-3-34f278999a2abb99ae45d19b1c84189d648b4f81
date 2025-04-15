@@ -91,14 +91,14 @@ export default function HomePage() {
       setIsDraggingOver(false);
       dragCounterRef.current = 0;
       const file = e.dataTransfer.files[0];
-      if (file && file.name.endsWith('.md')) {
+      if (file && (file.name.endsWith('.md') || file.name.endsWith('.txt'))) {
         const reader = new FileReader();
         reader.onload = () => {
           handleFileRead(reader.result as string, file.name);
         };
         reader.readAsText(file);
       } else {
-        alert('Please drop a .md file only.');
+        alert('Please drop a .md or .txt file only.');
       }
     };
 
@@ -120,7 +120,7 @@ export default function HomePage() {
       <FileSidebar />
       <main
         ref={mainRef}
-        className={`flex-1 p-2 overflow-y-auto ${isDraggingOver ? 'bg-gray-100' : ''} md:p-2   mx-auto w-full md:w-auto`}
+        className={`flex-1 p-2 overflow-y-auto ${isDraggingOver ? 'bg-gray-100' : ''} md:p-2 mx-auto w-full md:w-auto`}
       >
         {!activeFileId && <FileDrop onFileRead={handleFileRead} />}
         {loading && (
