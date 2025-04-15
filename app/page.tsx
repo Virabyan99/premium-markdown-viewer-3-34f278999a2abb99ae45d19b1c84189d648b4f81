@@ -38,10 +38,13 @@ export default function HomePage() {
     setLoading(true);
     setError(null);
     setLexicalJson(null);
-    (async () => {
+
+    const processFile = async () => {
       try {
         const ast = parseMarkdownToAst(activeFile.content);
         const json = await mdastToLexicalJson(ast);
+        // Introduce a minimum delay of 0.5 seconds
+        await new Promise((resolve) => setTimeout(resolve, 100));
         setLexicalJson(json);
         setLoading(false);
       } catch (err) {
@@ -49,7 +52,9 @@ export default function HomePage() {
         setError('Failed to process Markdown');
         setLoading(false);
       }
-    })();
+    };
+
+    processFile();
   }, [activeFileId, files]);
 
   const handleFileRead = async (content: string, fileName: string) => {
@@ -124,8 +129,8 @@ export default function HomePage() {
       >
         {!activeFileId && <FileDrop onFileRead={handleFileRead} />}
         {loading && (
-          <Card className='max-w-4xl mx-auto h-full'>
-            <CardContent className="pt-6  text-gray-500">Loading...</CardContent>
+          <Card className="max-w-4xl mx-auto h-full">
+            <CardContent className="pt-6 text-gray-500">Loading...</CardContent>
           </Card>
         )}
         {error && (

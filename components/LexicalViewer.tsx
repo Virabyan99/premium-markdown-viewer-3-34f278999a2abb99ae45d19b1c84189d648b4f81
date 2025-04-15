@@ -73,9 +73,11 @@ function Page({ pageJson }: { pageJson: string }) {
 
 export default function LexicalViewer({ json }: { json: string }) {
   const [currentPage, setCurrentPage] = useState(0);
+  const [visiblePages, setVisiblePages] = useState<number[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const nodesPerPage = 5;
 
   let parsedState;
   try {
@@ -89,7 +91,6 @@ export default function LexicalViewer({ json }: { json: string }) {
     );
   }
 
-  const nodesPerPage = 5;
   const totalNodes = parsedState.root.children.length;
   const pageCount = Math.ceil(totalNodes / nodesPerPage);
 
@@ -107,15 +108,18 @@ export default function LexicalViewer({ json }: { json: string }) {
         start = Math.max(0, pageCount - 5);
       }
     }
-
     return Array.from({ length: end - start }, (_, i) => start + i);
   };
 
-  const initialVisiblePages = Array.from(
-    { length: Math.min(3, pageCount) },
-    (_, i) => i
-  );
-  const [visiblePages, setVisiblePages] = useState<number[]>(initialVisiblePages);
+  // Reset state and scroll to top when json changes
+  useEffect(() => {
+    const initialVisible = Array.from({ length: Math.min(3, pageCount) }, (_, i) => i);
+    setCurrentPage(0);
+    setVisiblePages(initialVisible);
+    if (containerRef.current) {
+      containerRef.current.scrollTo(0, 0);
+    }
+  }, [json, pageCount]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -144,52 +148,50 @@ export default function LexicalViewer({ json }: { json: string }) {
   }, [pageCount, visiblePages]);
 
   return (
-    <div className='w-full'>
-
-    <Card className="max-w-4xl mx-auto">
-      <CardContent className="p-2 ">
-        <div
-          ref={containerRef}
-          className="max-h-[86vh] overflow-y-auto space-y-4"
-        >
-          {visiblePages.map((idx) => {
-            const start = idx * nodesPerPage;
-            const end = start + nodesPerPage;
-            const pageNodes = parsedState.root.children.slice(start, end);
-            const pageJson = JSON.stringify({
-              root: { ...parsedState.root, children: pageNodes },
-            });
-            return (
-              <div
-                key={idx}
-                ref={(el) => (pageRefs.current[idx] = el)}
-                data-page={idx}
-                className="transition-opacity duration-300"
-              >
-                <LexicalComposer
-                  initialConfig={{
-                    namespace: `Page${idx}`,
-                    theme,
-                    nodes: [
-                      HeadingNode,
-                      TextNode,
-                      ListNode,
-                      ListItemNode,
-                      HighlightedCodeNode,
-                    ],
-                    editable: false,
-                    onError: console.error,
-                  }}
+    <div className="w-full">
+      <Card className="max-w-4xl mx-auto">
+        <CardContent className="p-2">
+          <div
+            ref={containerRef}
+            className="max-h-[86vh] overflow-y-auto space-y-4"
+          >
+            {visiblePages.map((idx) => {
+              const start = idx * nodesPerPage;
+              const end = start + nodesPerPage;
+              const pageNodes = parsedState.root.children.slice(start, end);
+              const pageJson = JSON.stringify({
+                root: { ...parsedState.root, children: pageNodes },
+              });
+              return (
+                <div
+                  key={idx}
+                  ref={(el) => (pageRefs.current[idx] = el)}
+                  data-page={idx}
+                  className="transition-opacity duration-300"
                 >
-                  <Page pageJson={pageJson} />
-                </LexicalComposer>
-              </div>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
+                  <LexicalComposer
+                    initialConfig={{
+                      namespace: `Page${idx}`,
+                      theme,
+                      nodes: [
+                        HeadingNode,
+                        TextNode,
+                        ListNode,
+                        ListItemNode,
+                        HighlightedCodeNode,
+                      ],
+                      editable: false,
+                      onError: console.error,
+                    }}
+                  >
+                    <Page pageJson={pageJson} />
+                  </LexicalComposer>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
     </div>
-
   );
 }

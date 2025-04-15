@@ -55,7 +55,7 @@ export function FileSidebar() {
                     onClick={() => deleteFile(file.id)}
                     className='mr-3'
                   >
-                    <ChevronLeft className="h-4 w-4 " />
+                    <ChevronLeft className="h-4 w-4" />
                   </Button>
                 </div>
               ))}
