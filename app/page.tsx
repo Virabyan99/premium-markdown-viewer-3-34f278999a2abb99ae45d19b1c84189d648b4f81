@@ -120,12 +120,12 @@ export default function HomePage() {
       <FileSidebar />
       <main
         ref={mainRef}
-        className={`flex-1 p-4 overflow-y-auto ${isDraggingOver ? 'bg-gray-100' : ''}`}
+        className={`flex-1 p-2 overflow-y-auto ${isDraggingOver ? 'bg-gray-100' : ''}`}
       >
         {!activeFileId && <FileDrop onFileRead={handleFileRead} />}
         {loading && (
           <Card>
-            <CardContent className="pt-6 text-gray-500">Loading...</CardContent>
+            <CardContent className="pt-6 text-gray-500 max-w-4xl">Loading...</CardContent>
           </Card>
         )}
         {error && (

@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Markdown Viewer',
   description: 'A drag-and-drop Markdown viewing app',
+  icons: {
+    icon: '/favicon.png', // Reference to the favicon in the public folder
+  },
 };
 
 export default function RootLayout({
