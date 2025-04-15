@@ -3,7 +3,7 @@
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { ChevronRight, ChevronLeft, X } from 'lucide-react';
 import { useFileStore } from '@/lib/fileStore';
 import { useEffect } from 'react';
 
@@ -13,10 +13,9 @@ export function FileSidebar() {
   const activeFileId = useFileStore((s) => s.activeFileId);
   const setActiveFile = useFileStore((s) => s.setActiveFile);
   const loadFiles = useFileStore((s) => s.loadFiles);
-  // Assuming deleteFile is implemented in the store; add if missing
   const deleteFile = useFileStore((s) => s.deleteFile);
 
-  // Load files on mount, as in the example
+  // Load files on mount
   useEffect(() => {
     loadFiles();
   }, [loadFiles]);
@@ -40,20 +39,23 @@ export function FileSidebar() {
           ) : (
             <div className="space-y-2 p-2">
               {files.map((file) => (
-                <div key={file.id} className="flex items-center justify-between">
+                <div key={file.id} className="flex items-center gap-2">
                   <Button
                     variant={file.id === activeFileId ? 'default' : 'ghost'}
-                    className="flex-1 justify-start overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px]"
+                    className="flex-1 min-w-0 max-w-48"
                     onClick={() => setActiveFile(file.id)}
                   >
-                    {file.name}
+                    <span className="truncate-middle px-1 text-sm font-medium" title={file.name}>
+                      {file.name}
+                    </span>
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => deleteFile(file.id)}
+                    className='mr-3'
                   >
-                    <ChevronLeft className="h-4 w-4" />
+                    <ChevronLeft className="h-4 w-4 " />
                   </Button>
                 </div>
               ))}

@@ -112,6 +112,16 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+.truncate-middle {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: ltr;
+  text-align: left;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
