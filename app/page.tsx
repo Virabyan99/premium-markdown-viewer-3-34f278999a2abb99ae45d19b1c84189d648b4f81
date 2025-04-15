@@ -44,7 +44,7 @@ export default function HomePage() {
         const ast = parseMarkdownToAst(activeFile.content);
         const json = await mdastToLexicalJson(ast);
         // Introduce a minimum delay of 0.5 seconds
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 200));
         setLexicalJson(json);
         setLoading(false);
       } catch (err) {
