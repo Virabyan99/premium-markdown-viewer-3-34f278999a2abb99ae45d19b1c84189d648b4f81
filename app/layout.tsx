@@ -19,7 +19,14 @@ export const metadata: Metadata = {
   title: 'Markdown Viewer',
   description: 'A drag-and-drop Markdown viewing app',
   icons: {
-    icon: '/favicon.png', // Reference to the favicon in the public folder
+    icon: '/favicon.png',
+  },
+  // Ensure proper scaling on mobile devices
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
   },
 };
 
@@ -31,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen overflow-x-hidden`}
       >
         {children}
       </body>

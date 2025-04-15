@@ -116,16 +116,16 @@ export default function HomePage() {
   }, [handleFileRead]);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex flex-col min-h-screen md:flex-row">
       <FileSidebar />
       <main
         ref={mainRef}
-        className={`flex-1 p-2 overflow-y-auto ${isDraggingOver ? 'bg-gray-100' : ''}`}
+        className={`flex-1 p-2 overflow-y-auto ${isDraggingOver ? 'bg-gray-100' : ''} md:p-2   mx-auto w-full md:w-auto`}
       >
         {!activeFileId && <FileDrop onFileRead={handleFileRead} />}
         {loading && (
           <Card>
-            <CardContent className="pt-6 text-gray-500 max-w-4xl">Loading...</CardContent>
+            <CardContent className="pt-6 max-w-4xl text-gray-500">Loading...</CardContent>
           </Card>
         )}
         {error && (

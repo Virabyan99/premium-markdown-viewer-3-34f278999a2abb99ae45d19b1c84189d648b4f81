@@ -14,14 +14,16 @@ import { HighlightedCodeNode } from './HighlightedCodeNode';
 import { TextNode } from 'lexical';
 
 const theme = {
-  paragraph: 'mb-4',
-  heading: { h1: 'text-3xl font-bold mb-4', h2: 'text-2xl font-semibold mb-3' },
+  paragraph: 'mb-4 text-sm md:text-base',
+  heading: {
+    h1: 'text-2xl font-bold mb-4 md:text-3xl',
+    h2: 'text-xl font-semibold mb-3 md:text-2xl',
+  },
   text: { bold: 'font-bold', italic: 'italic' },
-  code: 'bg-gray-800 text-white p-2 rounded block font-mono text-sm',
-  list: { ul: 'list-disc pl-6', ol: 'list-decimal pl-6' },
+  code: 'bg-gray-800 text-white p-2 rounded block font-mono text-xs md:text-sm',
+  list: { ul: 'list-disc pl-4 md:pl-6', ol: 'list-decimal pl-4 md:pl-6' },
 };
 
-// Map language codes to Tailwind font classes
 const langFontMap = {
   kr: 'font-kr',
   jp: 'font-jp',
@@ -43,7 +45,6 @@ function Page({ pageJson }: { pageJson: string }) {
     }
   }
 
-  // Customize rendering to apply language-specific fonts
   editor.update(() => {
     const root = editor.getRootElement();
     if (root) {
@@ -61,7 +62,7 @@ function Page({ pageJson }: { pageJson: string }) {
   return (
     <>
       <RichTextPlugin
-        contentEditable={<ContentEditable className="prose max-w-none p-2" />}
+        contentEditable={<ContentEditable className="prose max-w-none p-1 md:p-2" />}
         placeholder={null}
         ErrorBoundary={LexicalErrorBoundary}
       />
@@ -143,11 +144,13 @@ export default function LexicalViewer({ json }: { json: string }) {
   }, [pageCount, visiblePages]);
 
   return (
-    <Card className='max-w-4xl mx-auto'>
-      <CardContent>
+    <div className='w-full'>
+
+    <Card className="max-w-4xl mx-auto">
+      <CardContent className="p-2 ">
         <div
           ref={containerRef}
-          className="max-h-[88vh] overflow-y-auto  space-y-4"
+          className="max-h-[86vh] overflow-y-auto space-y-4"
         >
           {visiblePages.map((idx) => {
             const start = idx * nodesPerPage;
@@ -186,5 +189,7 @@ export default function LexicalViewer({ json }: { json: string }) {
         </div>
       </CardContent>
     </Card>
+    </div>
+
   );
 }

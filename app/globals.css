@@ -121,10 +121,10 @@
   }
 
   pre {
-    @apply bg-muted text-foreground p-3 my-4 rounded-lg overflow-x-auto;
+    @apply bg-muted text-foreground p-2 my-2 rounded-lg overflow-x-auto md:p-3 md:my-4;
   }
   code {
-    @apply font-mono text-sm;
+    @apply font-mono text-xs md:text-sm;
   }
 
   .prose {
@@ -132,6 +132,6 @@
   }
 
   .font-kr, .font-jp, .font-sc {
-    @apply leading-[1.75]; /* Consistent line height for CJK */
+    @apply leading-[1.75];
   }
 }
